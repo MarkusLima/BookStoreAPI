@@ -27,12 +27,12 @@ namespace BookStoreAPI.Controllers
                 var result = await _userService.GetUsersAsync(skip, take);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
-        }
 
+        }
 
         [HttpGet("{id}")]
         //[RoleMiddleware("admin")]
@@ -46,10 +46,6 @@ namespace BookStoreAPI.Controllers
             catch (ExceptionsCode ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -67,10 +63,6 @@ namespace BookStoreAPI.Controllers
             catch (ExceptionsCode ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -90,10 +82,6 @@ namespace BookStoreAPI.Controllers
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
         }
 
 
@@ -109,10 +97,6 @@ namespace BookStoreAPI.Controllers
             catch (ExceptionsCode ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 

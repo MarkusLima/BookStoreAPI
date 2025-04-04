@@ -9,8 +9,8 @@ namespace BookStoreAPI.Profiles
     {
         public AuthorProfile()
         {
-            CreateMap<Author, ReadAuthorDTO>();
-            CreateMap<ReadAuthorDTO, Author>();
+            CreateMap<ReadAuthorDTO, Author>().ReverseMap();
+            CreateMap<WriteAuthorDTO, Author>().ReverseMap();
         }
     }
 }

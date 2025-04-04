@@ -3,6 +3,7 @@ using BookStoreAPI.Data;
 using BookStoreAPI.Interface;
 using BookStoreAPI.Models.DTOs.Book;
 using BookStoreAPI.Models.Entities;
+using BookStoreAPI.Tools;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services
@@ -40,21 +41,18 @@ namespace BookStoreAPI.Services
                 .Include(c => c.Category)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
-            if (result == null) return null;
+            if (result == null) throw new ExceptionsCode("Book not found", 404);
 
             return _mapper.Map<ReadBookDTO>(result);
         }
 
         public async Task<bool> UpdateBookAsync(int id, WriteBookDTO bookDto)
         {
-            var findBook = await _context.Books.FindAsync(id);
-            if (findBook == null) return false;
+            var result = await _context.Books.FindAsync(id);
+            if (result == null) throw new ExceptionsCode("Book not found", 404);
 
             var existingBook = await _context.Books.FirstOrDefaultAsync(c => c.title == bookDto.title);
-            if (existingBook != null) return false;
-
-            var result = await _context.Books.FindAsync(id);
-            if (result == null) return false;
+            if (existingBook != null) throw new ExceptionsCode("Book alread exist", 400);
 
             _mapper.Map(bookDto, result);
             await _context.SaveChangesAsync();
@@ -64,7 +62,7 @@ namespace BookStoreAPI.Services
         public async Task<ReadBookDTO> CreateBookAsync(WriteBookDTO bookDto)
         {
             var existingBook = await _context.Books.FirstOrDefaultAsync(c => c.title == bookDto.title);
-            if (existingBook != null) return null;
+            if (existingBook != null) throw new ExceptionsCode("Book alread exist", 400);
 
             var book = _mapper.Map<Book>(bookDto);
             _context.Books.Add(book);
@@ -75,11 +73,12 @@ namespace BookStoreAPI.Services
         public async Task<bool> DeleteBookAsync(int id)
         {
             var result = await _context.Books.FindAsync(id);
-            if (result == null) return false;
+            if (result == null) throw new ExceptionsCode("Book not found", 404); ;
 
             _context.Books.Remove(result);
             await _context.SaveChangesAsync();
             return true;
         }
+
     }
 }

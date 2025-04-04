@@ -3,6 +3,7 @@ using BookStoreAPI.Data;
 using BookStoreAPI.Interface;
 using BookStoreAPI.Models.DTOs.Author;
 using BookStoreAPI.Models.Entities;
+using BookStoreAPI.Tools;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services
@@ -27,30 +28,28 @@ namespace BookStoreAPI.Services
         public async Task<ReadAuthorDTO> GetAuthorByIdAsync(int id)
         {
             var author = await _context.Authors.FindAsync(id);
-            if (author == null) return null;
+            if (author == null) throw new ExceptionsCode("Author not found", 404);
             return _mapper.Map<ReadAuthorDTO>(author);
         }
 
-        public async Task<bool> UpdateAuthorAsync(int id, ReadAuthorDTO authorDto)
+        public async Task<bool> UpdateAuthorAsync(int id, WriteAuthorDTO authorDto)
         {
-            var findAuthor = await _context.Authors.FindAsync(id);
-            if (findAuthor == null) return false;
-
-            var existingAuthor = await _context.Authors.FirstOrDefaultAsync(c => c.name == authorDto.name);
-            if (existingAuthor != null) return false;
-
             var author = await _context.Authors.FindAsync(id);
-            if (author == null) return false;
+            if (author == null) throw new ExceptionsCode("Author not found", 404); ;
+
+            var existingAuthor = await _context.Authors
+                .FirstOrDefaultAsync(c => c.name == authorDto.name && c.Id != id);
+            if (existingAuthor != null) throw new ExceptionsCode("Author alread exist", 404);
 
             _mapper.Map(authorDto, author);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<ReadAuthorDTO> CreateAuthorAsync(ReadAuthorDTO authorDto)
+        public async Task<ReadAuthorDTO> CreateAuthorAsync(WriteAuthorDTO authorDto)
         {
             var existingAuthor = await _context.Authors.FirstOrDefaultAsync(c => c.name == authorDto.name);
-            if (existingAuthor != null) return null;
+            if (existingAuthor != null) throw new ExceptionsCode("Author alread exist", 400); ;
 
             var author = _mapper.Map<Author>(authorDto);
             _context.Authors.Add(author);
@@ -61,7 +60,7 @@ namespace BookStoreAPI.Services
         public async Task<bool> DeleteAuthorAsync(int id)
         {
             var author = await _context.Authors.FindAsync(id);
-            if (author == null) return false;
+            if (author == null) throw new ExceptionsCode("Author not found", 404); ;
 
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();

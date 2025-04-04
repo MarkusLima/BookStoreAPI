@@ -8,8 +8,8 @@ namespace BookStoreAPI.Profiles
     {
         public CategoriesProfile()
         {
-            CreateMap<Category, ReadCategoryDTO>();
-            CreateMap<ReadCategoryDTO, Category>();
+            CreateMap<ReadCategoryDTO, Category>().ReverseMap();
+            CreateMap<WriteCategoryDTO, Category>().ReverseMap();
         }
     }
 }

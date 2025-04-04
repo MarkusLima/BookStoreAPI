@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Interface;
 using BookStoreAPI.Models.DTOs.Book;
+using BookStoreAPI.Tools;
 
 namespace BookStoreAPI.Controllers
 {
@@ -25,9 +26,9 @@ namespace BookStoreAPI.Controllers
                 var result = await _bookService.GetBooksAsync(skip, take, keyword);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -38,12 +39,11 @@ namespace BookStoreAPI.Controllers
             try
             {
                 var result = await _bookService.GetBookByIdAsync(id);
-                if (result == null) return NotFound();
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -57,12 +57,11 @@ namespace BookStoreAPI.Controllers
             try
             {
                 var result = await _bookService.UpdateBookAsync(id, bookDto);
-                if (!result) return Conflict();
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -76,12 +75,11 @@ namespace BookStoreAPI.Controllers
             try
             {
                 var result = await _bookService.CreateBookAsync(bookDto);
-                if (result == null) return Conflict();
                 return CreatedAtAction(nameof(GetBookById), new { id = result.Id }, result);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -92,12 +90,11 @@ namespace BookStoreAPI.Controllers
             try
             {
                 var result = await _bookService.DeleteBookAsync(id);
-                if (!result) return NotFound();
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Interface;
 using BookStoreAPI.Models.DTOs.ItenOfPurchase;
+using BookStoreAPI.Models.DTOs.Purchase;
 using BookStoreAPI.Tools;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,10 +22,8 @@ namespace BookStoreAPI.Controllers
 
         [HttpPost]
         //[RoleMiddleware("admin")]
-        public async Task<ActionResult> UpdateItemPurchaseAsync(ReadItenOfPurchaseDTO itenOfPurchase)
+        public async Task<ActionResult> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             try
             {
                 var result = await _purchaseService.UpdateItemPurchaseAsync(itenOfPurchase);
@@ -34,9 +33,21 @@ namespace BookStoreAPI.Controllers
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
-            catch (Exception ex)
+        
+        }
+
+        [HttpGet("{id}")]
+        //[RoleMiddleware("admin")]
+        public async Task<ActionResult<ReadPurchaseDTO>> GetPurchaseById(int id)
+        {
+            try
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                var result = await _purchaseService.GetItensPurchasesAsync(id);
+                return Ok(result);
+            }
+            catch (ExceptionsCode ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 

@@ -9,7 +9,8 @@ namespace BookStoreAPI.Interface
         Task<ReadPurchaseDTO> GetPurchaseByIdAsync(int id);
         Task<ReadPurchaseDTO> CreatePurchaseAsync();
         Task<bool> UpdateStatusPurchaseAsync(int id, int status);
-        Task<bool> UpdateItemPurchaseAsync(ReadItenOfPurchaseDTO itenOfPurchase);
+        Task<bool> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase);
         Task<bool> DeletePurchaseAsync(int id);
+        Task<IEnumerable<ReadItenOfPurchaseDTO>> GetItensPurchasesAsync(int id);
     }
 }

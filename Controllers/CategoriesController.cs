@@ -1,6 +1,7 @@
 ﻿using BookStoreAPI.Interface;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Models.DTOs.Category;
+using BookStoreAPI.Tools;
 
 namespace BookStoreAPI.Controllers
 {
@@ -24,9 +25,9 @@ namespace BookStoreAPI.Controllers
                 var categories = await _categoryService.GetCategoriesAsync(skip, take);
                 return Ok(categories);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -37,49 +38,46 @@ namespace BookStoreAPI.Controllers
             try
             {
                 var category = await _categoryService.GetCategoryByIdAsync(id);
-                if (category == null) return NotFound();
                 return Ok(category);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
         [HttpPut("{id}")]
         //[RoleMiddleware("admin")]
-        public async Task<ActionResult> UpdateCategory(int id, [FromBody] ReadCategoryDTO categoryDto)
+        public async Task<ActionResult> UpdateCategory(int id, [FromBody] WriteCategoryDTO categoryDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             try
             {
                 var result = await _categoryService.UpdateCategoryAsync(id, categoryDto);
-                if (!result) return Conflict();
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
         [HttpPost]
         //[RoleMiddleware("admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> CreateCategory([FromBody] ReadCategoryDTO categoryDto)
+        public async Task<ActionResult> CreateCategory([FromBody] WriteCategoryDTO categoryDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             try
             {
                 var category = await _categoryService.CreateCategoryAsync(categoryDto);
-                if (category == null) return Conflict();
                 return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -90,12 +88,11 @@ namespace BookStoreAPI.Controllers
             try
             {
                 var result = await _categoryService.DeleteCategoryAsync(id);
-                if (!result) return NotFound();
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
     }

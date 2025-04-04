@@ -25,9 +25,9 @@ namespace BookStoreAPI.Controllers
                 var result = await _purchaseService.GetPurchasesAsync(skip, take);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ExceptionsCode ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(ex.StatusCode, ex.Message);
             }
         }
 
@@ -45,18 +45,12 @@ namespace BookStoreAPI.Controllers
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
         }
 
         [HttpPut("{id}")]
         //[RoleMiddleware("admin")]
         public async Task<ActionResult> UpdateStatusPurchaseAsync(int id, int status)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             try
             {
                 var result = await _purchaseService.UpdateStatusPurchaseAsync(id, status);
@@ -66,10 +60,6 @@ namespace BookStoreAPI.Controllers
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
         }
 
         [HttpPost]
@@ -77,8 +67,6 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreatePurchaseAsync()
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             try
             {
                 var result = await _purchaseService.CreatePurchaseAsync();
@@ -87,10 +75,6 @@ namespace BookStoreAPI.Controllers
             catch (ExceptionsCode ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -106,10 +90,6 @@ namespace BookStoreAPI.Controllers
             catch (ExceptionsCode ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 

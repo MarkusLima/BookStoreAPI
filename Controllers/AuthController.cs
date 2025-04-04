@@ -29,10 +29,7 @@ namespace BookStoreAPI.Controllers
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+  
         }
     }
 }

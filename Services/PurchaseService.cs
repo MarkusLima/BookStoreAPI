@@ -43,6 +43,16 @@ namespace BookStoreAPI.Services
 
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
 
+
+            var itemsOfPurchase = await _context.ItemsOfPurchases
+                .Where(i => i.purchaseId == id)
+                .ToListAsync();
+
+            if (status == result.status) throw new ExceptionsCode("Purchase is already in this status", 400);
+
+            if (status == 1) await this.DownOrUpStock(itemsOfPurchase, true);
+            else await this.DownOrUpStock(itemsOfPurchase, false);
+
             result.status = status;
 
             await _context.SaveChangesAsync();
@@ -72,11 +82,13 @@ namespace BookStoreAPI.Services
             return true;
         }
 
-        public async Task<bool> UpdateItemPurchaseAsync(ReadItenOfPurchaseDTO itenOfPurchase)
+        public async Task<bool> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase)
         {
             // to do pegar o id do usuario pelo token
             var result = await _context.Purchases.FirstOrDefaultAsync(i => i.userId == 1 && i.Id == itenOfPurchase.purchaseId);
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
+
+            if (result.status != 0) throw new ExceptionsCode("Purchase not editabled", 404);
 
             var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == itenOfPurchase.bookId);
             if (book == null) throw new ExceptionsCode("Book not found", 404);
@@ -90,7 +102,7 @@ namespace BookStoreAPI.Services
 
             if (itemOfPurchase != null)
             {
-                itemOfPurchase.quantity += itenOfPurchase.quantity;
+                itemOfPurchase.quantity = itenOfPurchase.quantity;
                 _context.ItemsOfPurchases.Update(itemOfPurchase);
             }
 
@@ -106,6 +118,32 @@ namespace BookStoreAPI.Services
             }
 
             await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<IEnumerable<ReadItenOfPurchaseDTO>> GetItensPurchasesAsync(int id)
+        {
+            var results = await _context.ItemsOfPurchases
+                .Where(i => i.Puchases.Id == id)
+                .ToListAsync();
+
+            return _mapper.Map<List<ReadItenOfPurchaseDTO>>(results);
+        }
+
+        private async Task<bool> DownOrUpStock(List<ItemOfPurchase> itemsOfPurchase, bool operation)
+        {
+            foreach (var item in itemsOfPurchase)
+            {
+                var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == item.bookId);
+                if (book == null) continue;
+
+                if (operation)
+                    book.stockQuantity -= item.quantity;
+                else
+                    book.stockQuantity += item.quantity;
+  
+                _context.Books.Update(book);
+            }
             return true;
         }
     }

@@ -6,8 +6,8 @@ namespace BookStoreAPI.Interface
     {
         Task<IEnumerable<ReadCategoryDTO>> GetCategoriesAsync(int skip, int take);
         Task<ReadCategoryDTO> GetCategoryByIdAsync(int id);
-        Task<bool> UpdateCategoryAsync(int id, ReadCategoryDTO categoryDto);
-        Task<ReadCategoryDTO> CreateCategoryAsync(ReadCategoryDTO categoryDto);
+        Task<bool> UpdateCategoryAsync(int id, WriteCategoryDTO categoryDto);
+        Task<ReadCategoryDTO> CreateCategoryAsync(WriteCategoryDTO categoryDto);
         Task<bool> DeleteCategoryAsync(int id);
     }
 }
