@@ -20,29 +20,44 @@ namespace BookStoreAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReadPurchaseDTO>> GetPurchasesAsync(int skip, int take)
+        public async Task<IEnumerable<ReadPurchaseDTO>> GetPurchasesAsync(int skip, int take, int userId = 0)
         {
+            if (userId != 0)
+            {
+                var resultClient = await _context.Purchases
+                    .Where(p => p.userId == userId)
+                    .Skip(skip).Take(take).ToListAsync();
+                return _mapper.Map<List<ReadPurchaseDTO>>(resultClient);
+            }
+
             var results = await _context.Purchases.Skip(skip).Take(take).ToListAsync();
             return _mapper.Map<List<ReadPurchaseDTO>>(results);
         }
 
-        public async Task<ReadPurchaseDTO> GetPurchaseByIdAsync(int id)
+        public async Task<ReadPurchaseDTO> GetPurchaseByIdAsync(int id, int userId = 0)
         {
-             var result = await _context.Purchases.FirstOrDefaultAsync(b => b.Id == id);
+            if (userId != 0) {
+                var resultClient = await _context.Purchases
+                    .Where(p => p.userId == userId && p.Id == id).FirstOrDefaultAsync();
+                if (resultClient == null) throw new ExceptionsCode("Purchase not found", 404);
+                return _mapper.Map<ReadPurchaseDTO>(resultClient);
+            }
 
+            var result = await _context.Purchases.FirstOrDefaultAsync(b => b.Id == id);
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
 
             return _mapper.Map<ReadPurchaseDTO>(result);
         }
 
-        public async Task<bool> UpdateStatusPurchaseAsync(int id, int status)
+        public async Task<bool> UpdateStatusPurchaseAsync(int id, int status, int userId = 0)
         {
 
-            var result = await _context.Purchases
-                .FirstOrDefaultAsync( p => p.userId == 1 && p.Id == id);
+            Purchase result;
+
+            if (userId != 0) result = await _context.Purchases.FirstOrDefaultAsync(p => p.userId == userId && p.Id == id);
+            else result = await _context.Purchases.FirstOrDefaultAsync(p => p.Id == id);
 
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
-
 
             var itemsOfPurchase = await _context.ItemsOfPurchases
                 .Where(i => i.purchaseId == id)
@@ -59,11 +74,11 @@ namespace BookStoreAPI.Services
             return true;
         }
 
-        public async Task<ReadPurchaseDTO> CreatePurchaseAsync()
+        public async Task<ReadPurchaseDTO> CreatePurchaseAsync(int userId)
         {
             var purchase = new Purchase
             {
-                userId = 1, status = 0, dateOfPurchase = DateTime.Now
+                userId = userId, status = 0, dateOfPurchase = DateTime.Now
             };
 
             _context.Purchases.Add(purchase);
@@ -72,7 +87,7 @@ namespace BookStoreAPI.Services
             return _mapper.Map<ReadPurchaseDTO>(purchase);
         }
 
-        public async Task<bool> DeletePurchaseAsync(int id)
+        public async Task<bool> DeletePurchaseAsync(int id, int userId = 0)
         {
             var result = await _context.Purchases.FindAsync(id);
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
@@ -82,10 +97,13 @@ namespace BookStoreAPI.Services
             return true;
         }
 
-        public async Task<bool> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase)
+        public async Task<bool> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase, int userId = 0)
         {
-            // to do pegar o id do usuario pelo token
-            var result = await _context.Purchases.FirstOrDefaultAsync(i => i.userId == 1 && i.Id == itenOfPurchase.purchaseId);
+            Purchase result;
+
+            if (userId != 0) result = await _context.Purchases.FirstOrDefaultAsync(i => i.userId == userId && i.Id == itenOfPurchase.purchaseId);
+            else result = await _context.Purchases.FirstOrDefaultAsync(i => i.Id == itenOfPurchase.purchaseId);
+
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
 
             if (result.status != 0) throw new ExceptionsCode("Purchase not editabled", 404);
@@ -121,11 +139,19 @@ namespace BookStoreAPI.Services
             return true;
         }
 
-        public async Task<IEnumerable<ReadItenOfPurchaseDTO>> GetItensPurchasesAsync(int id)
+        public async Task<IEnumerable<ReadItenOfPurchaseDTO>> GetItensPurchasesAsync(int id, int userId = 0)
         {
+
+            if (userId != 0)
+            {
+                var resultClient = await _context.ItemsOfPurchases
+                    .Where(i => i.Puchases.userId == userId && i.Puchases.Id == id).ToListAsync();
+
+                return _mapper.Map<List<ReadItenOfPurchaseDTO>>(resultClient);
+            }
+       
             var results = await _context.ItemsOfPurchases
-                .Where(i => i.Puchases.Id == id)
-                .ToListAsync();
+                .Where(i => i.Puchases.Id == id).ToListAsync();
 
             return _mapper.Map<List<ReadItenOfPurchaseDTO>>(results);
         }

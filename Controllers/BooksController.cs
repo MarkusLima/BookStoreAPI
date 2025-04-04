@@ -3,6 +3,7 @@ using BookStoreAPI.Interface;
 using BookStoreAPI.Models.DTOs.Book;
 using BookStoreAPI.Tools;
 using BookStoreAPI.Midlewares;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStoreAPI.Controllers
 {
@@ -48,6 +49,7 @@ namespace BookStoreAPI.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize]
         [RoleMiddleware("Adm")]
         public async Task<ActionResult> UpdateBook(int id, [FromBody] WriteBookDTO bookDto)
         {
@@ -65,6 +67,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [RoleMiddleware("Adm")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateBook([FromBody] WriteBookDTO bookDto)
@@ -83,6 +86,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         [RoleMiddleware("Adm")]
         public async Task<ActionResult> DeleteBook(int id)
         {

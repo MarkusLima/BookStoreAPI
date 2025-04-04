@@ -1,7 +1,9 @@
-﻿using BookStoreAPI.Interface;
+﻿using BookStoreAPI.Data;
+using BookStoreAPI.Interface;
 using BookStoreAPI.Midlewares;
 using BookStoreAPI.Models.DTOs.ItenOfPurchase;
 using BookStoreAPI.Models.DTOs.Purchase;
+using BookStoreAPI.Models.Entities;
 using BookStoreAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +15,12 @@ namespace BookStoreAPI.Controllers
     public class PurchasesController : Controller
     {
         private readonly IPurchaseSevice _purchaseService;
+        private readonly UserContextService _userContextService;
 
-        public PurchasesController(IPurchaseSevice purchaseService)
+        public PurchasesController(IPurchaseSevice purchaseService, UserContextService userContextService)
         {
             _purchaseService = purchaseService;
+            _userContextService = userContextService;
         }
 
         [HttpGet]
@@ -26,6 +30,11 @@ namespace BookStoreAPI.Controllers
         {
             try
             {
+                if (_userContextService.roleName == "Client")
+                {
+                    var resultClient = await _purchaseService.GetPurchasesAsync(skip, take, _userContextService.userId);
+                    return Ok(resultClient);
+                }
                 var result = await _purchaseService.GetPurchasesAsync(skip, take);
                 return Ok(result);
             }
@@ -43,6 +52,12 @@ namespace BookStoreAPI.Controllers
         {
             try
             {
+                if (_userContextService.roleName == "Client")
+                {
+                    var resultClient = await _purchaseService.GetPurchaseByIdAsync(id, _userContextService.userId);
+                    return Ok(resultClient);
+                }
+
                 var result = await _purchaseService.GetPurchaseByIdAsync(id);
                 return Ok(result);
             }
@@ -59,7 +74,13 @@ namespace BookStoreAPI.Controllers
         {
             try
             {
-                var result = await _purchaseService.UpdateStatusPurchaseAsync(id, status);
+                if (_userContextService.roleName == "Client")
+                {
+                    await _purchaseService.UpdateStatusPurchaseAsync(id, status, _userContextService.userId);
+                    return NoContent();
+                }
+
+                await _purchaseService.UpdateStatusPurchaseAsync(id, status);
                 return NoContent();
             }
             catch (ExceptionsCode ex)
@@ -76,7 +97,7 @@ namespace BookStoreAPI.Controllers
         {
             try
             {
-                var result = await _purchaseService.CreatePurchaseAsync();
+                var result = await _purchaseService.CreatePurchaseAsync(_userContextService.userId);
                 return CreatedAtAction(nameof(GetPurchaseById), new { id = result.Id }, result);
             }
             catch (ExceptionsCode ex)

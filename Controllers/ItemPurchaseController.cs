@@ -3,6 +3,7 @@ using BookStoreAPI.Interface;
 using BookStoreAPI.Midlewares;
 using BookStoreAPI.Models.DTOs.ItenOfPurchase;
 using BookStoreAPI.Models.DTOs.Purchase;
+using BookStoreAPI.Models.Entities;
 using BookStoreAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,9 +33,13 @@ namespace BookStoreAPI.Controllers
         {
             try
             {
-                var roleName = _userContextService.roleName;
-                var userId = _userContextService.userId;
-                var result = await _purchaseService.UpdateItemPurchaseAsync(itenOfPurchase);
+                if (_userContextService.roleName == "Client")
+                {
+                    await _purchaseService.UpdateItemPurchaseAsync(itenOfPurchase, _userContextService.userId);
+                    return NoContent();
+                }
+   
+                await _purchaseService.UpdateItemPurchaseAsync(itenOfPurchase);
                 return NoContent();
             }
             catch (ExceptionsCode ex)
@@ -51,6 +56,12 @@ namespace BookStoreAPI.Controllers
         {
             try
             {
+                if (_userContextService.roleName == "Client")
+                {
+                    var resultClient = await _purchaseService.GetItensPurchasesAsync(id, _userContextService.userId);
+                    return Ok(resultClient);
+                }
+
                 var result = await _purchaseService.GetItensPurchasesAsync(id);
                 return Ok(result);
             }

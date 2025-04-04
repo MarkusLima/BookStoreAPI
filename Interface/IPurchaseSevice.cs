@@ -5,12 +5,12 @@ namespace BookStoreAPI.Interface
 {
     public interface IPurchaseSevice
     {
-        Task<IEnumerable<ReadPurchaseDTO>> GetPurchasesAsync(int skip, int take);
-        Task<ReadPurchaseDTO> GetPurchaseByIdAsync(int id);
-        Task<ReadPurchaseDTO> CreatePurchaseAsync();
-        Task<bool> UpdateStatusPurchaseAsync(int id, int status);
-        Task<bool> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase);
-        Task<bool> DeletePurchaseAsync(int id);
-        Task<IEnumerable<ReadItenOfPurchaseDTO>> GetItensPurchasesAsync(int id);
+        Task<IEnumerable<ReadPurchaseDTO>> GetPurchasesAsync(int skip, int take, int userId = 0);
+        Task<ReadPurchaseDTO> GetPurchaseByIdAsync(int id, int userId = 0);
+        Task<ReadPurchaseDTO> CreatePurchaseAsync(int userId);
+        Task<bool> UpdateStatusPurchaseAsync(int id, int status, int userId = 0);
+        Task<bool> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase, int userId = 0);
+        Task<bool> DeletePurchaseAsync(int id, int userId = 0);
+        Task<IEnumerable<ReadItenOfPurchaseDTO>> GetItensPurchasesAsync(int id, int userId = 0);
     }
 }

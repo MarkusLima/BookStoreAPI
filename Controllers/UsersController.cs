@@ -3,8 +3,8 @@ using BookStoreAPI.Midlewares;
 using BookStoreAPI.Models.DTOs.User;
 using BookStoreAPI.Tools;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BookStoreAPI.Controllers
 {
@@ -20,6 +20,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [RoleMiddleware("Adm")]
         public async Task<ActionResult<IEnumerable<ReadUserDTO>>> GetUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
@@ -36,6 +37,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         [RoleMiddleware("Adm")]
         public async Task<ActionResult<ReadUserDTO>> GetUserById(int id)
         {
@@ -51,6 +53,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         [RoleMiddleware("Adm")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] WriteUserDTO userDto)
         {
@@ -68,7 +71,6 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
-        [RoleMiddleware("Adm")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateUser([FromBody] WriteUserDTO userDto)
         {
@@ -87,6 +89,7 @@ namespace BookStoreAPI.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize]
         [RoleMiddleware("Adm")]
         public async Task<ActionResult> DeleteUser(int id)
         {
