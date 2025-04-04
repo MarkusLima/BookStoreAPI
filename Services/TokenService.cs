@@ -8,17 +8,34 @@ namespace BookStoreAPI.Services
 {
     public class TokenService
     {
+        private readonly IConfiguration _configuration;
+
+        public TokenService()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            _configuration = builder.Build();
+        }
         public string GenerateToken(User user)
         {
+
+            var issuer = _configuration["JwtSettings:Issuer"];
+            var audience = _configuration["JwtSettings:Audience"];
+            var secretKey = _configuration["JwtSettings:SecretKey"];
+
+
             var handler = new JwtSecurityTokenHandler();
 
             var credentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.PrivateKey)), 
-                SecurityAlgorithms.HmacSha256Signature
-            );
+                   new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                   SecurityAlgorithms.HmacSha256Signature
+               );
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+                Issuer = issuer,
+                Audience = audience,
                 Subject = GenerateClaims(user),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = credentials
@@ -27,6 +44,7 @@ namespace BookStoreAPI.Services
             var token = handler.CreateToken(tokenDescriptor);
 
             return handler.WriteToken(token);
+
 
         }
 

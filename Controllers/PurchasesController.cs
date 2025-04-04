@@ -1,7 +1,9 @@
 ﻿using BookStoreAPI.Interface;
+using BookStoreAPI.Midlewares;
 using BookStoreAPI.Models.DTOs.ItenOfPurchase;
 using BookStoreAPI.Models.DTOs.Purchase;
 using BookStoreAPI.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers
@@ -18,6 +20,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<IEnumerable<ReadPurchaseDTO>>> GetPurchasesAsync([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
             try
@@ -33,7 +37,8 @@ namespace BookStoreAPI.Controllers
 
 
         [HttpGet("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm", "Client")]
         public async Task<ActionResult<ReadPurchaseDTO>> GetPurchaseById(int id)
         {
             try
@@ -48,7 +53,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm", "Client")]
         public async Task<ActionResult> UpdateStatusPurchaseAsync(int id, int status)
         {
             try
@@ -63,7 +69,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm", "Client")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreatePurchaseAsync()
         {
@@ -79,7 +86,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm", "Client")]
         public async Task<ActionResult> DeletePurchase(int id)
         {
             try

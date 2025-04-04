@@ -1,7 +1,10 @@
-﻿using BookStoreAPI.Interface;
+﻿using BookStoreAPI.Data;
+using BookStoreAPI.Interface;
+using BookStoreAPI.Midlewares;
 using BookStoreAPI.Models.DTOs.ItenOfPurchase;
 using BookStoreAPI.Models.DTOs.Purchase;
 using BookStoreAPI.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,19 +16,24 @@ namespace BookStoreAPI.Controllers
     public class ItemPurchaseController : Controller
     {
         private readonly IPurchaseSevice _purchaseService;
+        private readonly UserContextService _userContextService;
 
-        public ItemPurchaseController(IPurchaseSevice purchaseService)
+        public ItemPurchaseController(IPurchaseSevice purchaseService, UserContextService userContextService)
         {
             _purchaseService = purchaseService;
+            _userContextService = userContextService;
         }
 
 
         [HttpPost]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm", "Client")]
         public async Task<ActionResult> UpdateItemPurchaseAsync(WriteItenOfPurchaseDTO itenOfPurchase)
         {
             try
             {
+                var roleName = _userContextService.roleName;
+                var userId = _userContextService.userId;
                 var result = await _purchaseService.UpdateItemPurchaseAsync(itenOfPurchase);
                 return NoContent();
             }
@@ -37,7 +45,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm", "Client")]
         public async Task<ActionResult<ReadPurchaseDTO>> GetPurchaseById(int id)
         {
             try

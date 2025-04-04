@@ -10,5 +10,6 @@ namespace BookStoreAPI.Interface
         Task<ReadUserDTO> CreateUserAsync(WriteUserDTO userDto);
         Task<bool> DeleteUserAsync(int id);
         Task<string> LoginUserAsync(LoginUserDTO userDto);
+        Task<ReadRoleNameAndUserIdDTO> GetRoleUserByEmailAsync(string email);
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Models.DTOs.Category;
 using BookStoreAPI.Tools;
+using BookStoreAPI.Midlewares;
 
 namespace BookStoreAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<IEnumerable<ReadCategoryDTO>>> GetCategories([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
             try
@@ -32,7 +33,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<ReadCategoryDTO>> GetCategoryById(int id)
         {
             try
@@ -47,7 +48,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> UpdateCategory(int id, [FromBody] WriteCategoryDTO categoryDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -64,7 +65,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateCategory([FromBody] WriteCategoryDTO categoryDto)
         {
@@ -82,7 +83,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> DeleteCategory(int id)
         {
             try

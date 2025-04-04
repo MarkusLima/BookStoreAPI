@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Models.DTOs.Author;
 using BookStoreAPI.Tools;
+using BookStoreAPI.Midlewares;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStoreAPI.Controllers
 {
@@ -18,7 +20,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<IEnumerable<ReadAuthorDTO>>> GetAuthors([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
             var result = await _authorService.GetAuthorsAsync(skip, take);
@@ -26,7 +29,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<ReadAuthorDTO>> GetAuthorById(int id)
         {
             try
@@ -41,7 +45,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> UpdateAuthor(int id, [FromBody] WriteAuthorDTO authorDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -58,7 +63,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateAuthor([FromBody] WriteAuthorDTO authorDto)
         {
@@ -76,7 +82,8 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[RoleMiddleware("admin")]
+        [Authorize]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> DeleteAuthor(int id)
         {
             try

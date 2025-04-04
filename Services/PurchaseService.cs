@@ -28,7 +28,7 @@ namespace BookStoreAPI.Services
 
         public async Task<ReadPurchaseDTO> GetPurchaseByIdAsync(int id)
         {
-            var result = await _context.Purchases.FirstOrDefaultAsync(b => b.Id == id);
+             var result = await _context.Purchases.FirstOrDefaultAsync(b => b.Id == id);
 
             if (result == null) throw new ExceptionsCode("Purchase not found", 404);
 

@@ -2,6 +2,7 @@
 using BookStoreAPI.Interface;
 using BookStoreAPI.Models.DTOs.Book;
 using BookStoreAPI.Tools;
+using BookStoreAPI.Midlewares;
 
 namespace BookStoreAPI.Controllers
 {
@@ -18,7 +19,6 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet]
-        //[RoleMiddleware("admin")]
         public async Task<ActionResult<IEnumerable<ReadBookDTO>>> GetBooks([FromQuery] int skip = 0, [FromQuery] int take = 10, [FromQuery] string keyword = "")
         {
             try
@@ -33,7 +33,6 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[RoleMiddleware("admin")]
         public async Task<ActionResult<ReadBookDTO>> GetBookById(int id)
         {
             try
@@ -49,7 +48,7 @@ namespace BookStoreAPI.Controllers
 
 
         [HttpPut("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> UpdateBook(int id, [FromBody] WriteBookDTO bookDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -66,7 +65,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateBook([FromBody] WriteBookDTO bookDto)
         {
@@ -84,7 +83,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> DeleteBook(int id)
         {
             try

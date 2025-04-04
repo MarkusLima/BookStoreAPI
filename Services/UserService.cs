@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookStoreAPI.Data;
 using BookStoreAPI.Interface;
+using BookStoreAPI.Models.DTOs.Book;
 using BookStoreAPI.Models.DTOs.User;
 using BookStoreAPI.Models.Entities;
 using BookStoreAPI.Tools;
@@ -38,6 +39,25 @@ namespace BookStoreAPI.Services
             if (result == null) throw new ExceptionsCode("User not found", 404);
 
             return _mapper.Map<ReadUserDTO>(result);
+        }
+
+        public async Task<ReadRoleNameAndUserIdDTO> GetRoleUserByEmailAsync(string email)
+        {
+            var result = await _context.Users
+                .Include(r => r.Role)
+                .FirstOrDefaultAsync(b => b.email == email);
+
+            if (result == null) throw new ExceptionsCode("Book not found", 404);
+
+            if (result.Role?.name == null) throw new ExceptionsCode("Role not found", 400);
+
+            var roleNameAndUserId = new ReadRoleNameAndUserIdDTO
+            {
+                roleName = result.Role.name,
+                userId = result.Id
+            };
+
+            return roleNameAndUserId;
         }
 
         public async Task<bool> UpdateUserAsync(int id, WriteUserDTO userDto)

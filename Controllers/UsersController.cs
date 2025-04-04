@@ -1,4 +1,5 @@
 ﻿using BookStoreAPI.Interface;
+using BookStoreAPI.Midlewares;
 using BookStoreAPI.Models.DTOs.User;
 using BookStoreAPI.Tools;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<IEnumerable<ReadUserDTO>>> GetUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
             try
@@ -35,7 +36,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult<ReadUserDTO>> GetUserById(int id)
         {
             try
@@ -50,7 +51,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] WriteUserDTO userDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -67,7 +68,7 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPost]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateUser([FromBody] WriteUserDTO userDto)
         {
@@ -86,7 +87,7 @@ namespace BookStoreAPI.Controllers
 
 
         [HttpDelete("{id}")]
-        //[RoleMiddleware("admin")]
+        [RoleMiddleware("Adm")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             try
