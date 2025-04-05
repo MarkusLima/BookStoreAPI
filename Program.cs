@@ -2,7 +2,6 @@
 using BookStoreAPI.Interface;
 using BookStoreAPI.Seeders;
 using BookStoreAPI.Services;
-using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using BookStoreAPI.Models.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +9,6 @@ using BookStoreAPI.Midlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BookStoreAPI;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
